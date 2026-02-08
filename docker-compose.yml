@@ -1,7 +1,20 @@
 version: '3.8'
 services:
-  mcp-cpq-model-quality-checker:
-    build: /mcp-cpq
+  mcp-cpq:
+    build: ./mcp_cpq
+    env_file:
+      - ./mcp_cpq/.env
     ports:
-      - "8000:8000"
+      - "${MCP_CPQ_PORT:-8000}:${MCP_CPQ_PORT:-8000}"
+    restart: unless-stopped
+
+  agent-cpq:
+    build: ./agent_cpq
+    env_file:
+      - ./agent_cpq/.env
+    ports:
+      - "${MCP_SELF__PORT:-8001}:${MCP_SELF__PORT:-8001}"
+    depends_on:
+      mcp-cpq:
+        condition: service_healthy
     restart: unless-stopped

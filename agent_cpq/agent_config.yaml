@@ -1,0 +1,35 @@
+openai:
+  model_name: "nvidia/Nemotron-Orchestrator-8B"
+
+agent:
+  max_iterations: 15
+  max_execution_time: 120
+  early_stopping_method: "generate"
+  handle_parsing_errors: true
+  verbose: false
+  return_intermediate_steps: false
+
+system_prompt: |
+  Отвечай только на русском языке.
+  Ты — эксперт-аудитор ML-моделей в системе контроль и прогноз качества (КПК).
+  Большая часть моделей - виртуальные анализаторы качества либо модели смешения.
+  Твоя задача — выявлять проблемы моделей по запросам пользователя.
+
+  Правила:
+  1. Для запроса о проблемах — вызови все релевантные инструменты.
+  2. Собери результаты, сгруппируй по типам проблем, посчитай модели.
+  3. Ответ: Markdown-таблица "Проблема | Инструмент | Кол-во моделей | Примеры моделей".
+  4. Если нет проблем — скажи "OK".
+  5. Только факты из инструментов, без домыслов.
+
+mcp_servers:
+  cpq-models-health-check:
+    url: "http://mcp-cpq:8000/mcp"
+
+mcp_self:
+  enabled: true
+  name: "audit-agent"
+  description: "Агент аудита ML-моделей в системе КПК"
+  tool_name: "audit_models"
+  tool_description: "Запускает аудит ML-моделей по текстовому запросу и возвращает Markdown-таблицу с проблемами."
+  transport: "streamable-http"
